@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" creationComplete="initApp(event)">
+
+    <fx:Script>
+        <![CDATA[
+        import flash.filters.ColorMatrixFilter;
+
+        import mx.events.FlexEvent;
+
+        private var bwMatrix:Array;
+        private var bwFilter:ColorMatrixFilter;
+
+        [Bindable]
+        private var fileLoaded:Boolean = false;
+
+        protected function initApp(event:FlexEvent):void
+        {
+
+        }
+
+        protected function loadNewImage(e:MouseEvent):void
+        {
+            displayImage.source = "org/lmn/laserRaster/assets/lmn-logo-color-trans-large.png";
+            bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                0, 0, 0, 1, 0];
+            bwFilter = new ColorMatrixFilter(bwMatrix);
+            displayImage.filters = [bwFilter];
+            fileLoaded = true;
+        }
+
+        protected function updateContrast():void
+        {
+            bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                0, 0, 0, 1, 0];
+            bwFilter = new ColorMatrixFilter(bwMatrix);
+            displayImage.filters = [bwFilter];
+        }
+
+        protected function generateGCode(event:MouseEvent):void
+        {
+            var gcode:String = "";
+
+            var color:uint;
+            var red:uint;
+            var green:uint;
+            var blue:uint;
+
+            var myBitmap:BitmapData = new BitmapData(displayImage.bitmapData.width,displayImage.bitmapData.height);
+            myBitmap.applyFilter(displayImage.bitmapData,new Rectangle(0,0,displayImage.bitmapData.width,displayImage.bitmapData.height),new Point(),bwFilter);
+
+            for(var y:int = 0; y < displayImage.bitmapData.height; y = y +5)
+            {
+                for(var x:int = 0; x < displayImage.bitmapData.width; x = x + 5)
+                {
+                    color = myBitmap.getPixel(x, y);
+                    red = color & 0xFF0000 >> 16;
+                    //green = color & 0x00FF00 >> 8;
+                    //blue = color & 0x0000FF >> 0;
+
+                    //gcode = gcode + displayImage.bitmapData.getPixel(x,y);
+                    gcode = gcode + "[" + red.toString(16) + "]";
+                }
+            }
+
+            gcodeOutput.text = gcode;
+            gcodePanel.visible = true;
+        }
+        ]]>
+    </fx:Script>
+
+    <s:layout>
+        <s:ConstraintLayout />
+    </s:layout>
+
+    <s:Panel left="10" top="10" width="250" title="Laser Raster Generator">
+        <s:layout>
+            <s:VerticalLayout horizontalAlign="center" gap="10" paddingTop="10" />
+        </s:layout>
+
+        <s:Button label="Load Image..." click="loadNewImage(event)" />
+        <s:Button label="Generate GCODE" enabled="{fileLoaded}" click="generateGCode(event)" />
+
+    </s:Panel>
+
+    <s:Panel right="10" top="10" width="{width-300}" title="Image" visible="{fileLoaded}" id="imagePanel">
+
+        <s:BitmapImage width="100%" height="100%" id="displayImage" fillMode="clip"/>
+
+        <s:controlBarContent>
+            <s:VGroup>
+                <s:HSlider width="250" minimum="0" maximum="1" height="5" id="rcontrastSlider" value="0.2225" toolTip="Red Contrast" stepSize="0.05" change="updateContrast()"/>
+                <s:HSlider width="250" minimum="0" maximum="1" height="5" id="gcontrastSlider" value="0.7169" toolTip="Green Contrast" stepSize="0.05" change="updateContrast()"/>
+                <s:HSlider width="250" minimum="0" maximum="1" height="5" id="bcontrastSlider" value="0.0606" toolTip="Blue Contrast" stepSize="0.05" change="updateContrast()"/>
+            </s:VGroup>
+        </s:controlBarContent>
+
+        <s:controlBarLayout>
+            <s:HorizontalLayout verticalAlign="middle" horizontalAlign="center" />
+        </s:controlBarLayout>
+    </s:Panel>
+
+    <s:Panel bottom="10" left="10" right="10" top="{imagePanel.height + 20}" title="GCode" visible="false" id="gcodePanel">
+        <s:TextArea width="100%" height="100%" id="gcodeOutput"/>
+    </s:Panel>
+
+</s:Application>
