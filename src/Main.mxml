@@ -6,6 +6,7 @@
         import flash.filters.ColorMatrixFilter;
 
         import mx.events.FlexEvent;
+        import mx.utils.Base64Encoder;
 
         private var bwMatrix:Array;
         private var bwFilter:ColorMatrixFilter;
@@ -42,32 +43,43 @@
 
         protected function generateGCode(event:MouseEvent):void
         {
-            var gcode:String = "";
+            var gcode:String = "M106 ;turn on stepper fan\nM80   ; enable accessories\nM84   ; disable steppers\nG21   ; set units to mm\nG90   ; set absolute positioning\nG92 X0 Y0 ; zero axis\n";
+            var encoder:Base64Encoder = new Base64Encoder();
 
             var color:uint;
             var red:uint;
             var green:uint;
             var blue:uint;
+            var bwColor:uint;
+
+            var ba:ByteArray = new ByteArray();
+
+            encoder.insertNewLines = false;
 
             var myBitmap:BitmapData = new BitmapData(displayImage.bitmapData.width,displayImage.bitmapData.height);
             myBitmap.applyFilter(displayImage.bitmapData,new Rectangle(0,0,displayImage.bitmapData.width,displayImage.bitmapData.height),new Point(),bwFilter);
 
-            for(var y:int = 0; y < displayImage.bitmapData.height; y = y +5)
+            for(var y:int = 0; y < displayImage.bitmapData.height; y++)
             {
-                for(var x:int = 0; x < displayImage.bitmapData.width; x = x + 5)
+                for(var x:int = 0; x < displayImage.bitmapData.width; x++)
                 {
                     color = myBitmap.getPixel(x, y);
                     red = color & 0xFF0000 >> 16;
-                    //green = color & 0x00FF00 >> 8;
-                    //blue = color & 0x0000FF >> 0;
+                    green = color & 0x00FF00 >> 8;
+                    blue = color & 0x0000FF >> 0;
+                    bwColor = (red + green + blue)/3;
 
-                    //gcode = gcode + displayImage.bitmapData.getPixel(x,y);
-                    gcode = gcode + "[" + red.toString(16) + "]";
+                    ba.writeUnsignedInt(bwColor);
                 }
             }
 
+            ba.position = 0;
+            encoder.encodeBytes(ba,0,displayImage.bitmapData.width);
+            gcode = gcode + "G7 N0 L"+ displayImage.bitmapData.width.toString() + " D" + encoder.toString();
+
             gcodeOutput.text = gcode;
             gcodePanel.visible = true;
+
         }
         ]]>
     </fx:Script>
