@@ -7,12 +7,16 @@
  */
 package org.lmn.laserRaster.classes
 {
-	import flash.events.Event;
+import flash.display.DisplayObject;
+import flash.display.Loader;
+import flash.display.LoaderInfo;
+import flash.events.Event;
 	import flash.net.FileFilter;
 	import flash.net.FileReference;
 
 	import spark.primitives.BitmapImage;
 
+    [Event(name="RasterImageUpdate",type="flash.events.Event")]
 	public class RasterImage
 	{
 		[Bindable]
@@ -40,10 +44,21 @@ package org.lmn.laserRaster.classes
 
 		private function fileLoaded(event:Event):void
 		{
-			trace("Loaded File");
-			source.source = fr.data;
+            var loader:Loader = new Loader();
+            loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadBytesHandler);
+            loader.loadBytes(fr.data);
+
 		}
 
 
-	}
+        private function loadBytesHandler(event:Event):void
+        {
+            var loaderInfo:LoaderInfo = (event.target as LoaderInfo);
+            loaderInfo.removeEventListener(Event.COMPLETE, loadBytesHandler);
+            var incomingImage:DisplayObject = loaderInfo.content;
+            source.source = incomingImage;
+            var e:Event = new Event("RasterImageUpdate");
+            dispatchEvent(e);
+        }
+    }
 }
