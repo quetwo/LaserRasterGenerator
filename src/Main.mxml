@@ -8,11 +8,16 @@
         import mx.events.FlexEvent;
         import mx.utils.Base64Encoder;
 
+        import org.lmn.laserRaster.classes.RasterImage;
+
         private var bwMatrix:Array;
         private var bwFilter:ColorMatrixFilter;
 
         [Bindable]
         private var fileLoaded:Boolean = false;
+
+        [Bindable]
+        protected var rasterImageItem:RasterImage = new RasterImage();
 
         protected function initApp(event:FlexEvent):void
         {
@@ -21,14 +26,15 @@
 
         protected function loadNewImage(e:MouseEvent):void
         {
-            displayImage.source = "org/lmn/laserRaster/assets/lmn-logo-color-trans-large.png";
-            bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                0, 0, 0, 1, 0];
-            bwFilter = new ColorMatrixFilter(bwMatrix);
-            displayImage.filters = [bwFilter];
-            fileLoaded = true;
+            //displayImage.source = "org/lmn/laserRaster/assets/lmn-logo-color-trans-large.png";
+            //bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+            //    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+            //    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+            //    0, 0, 0, 1, 0];
+            //bwFilter = new ColorMatrixFilter(bwMatrix);
+            //displayImage.filters = [bwFilter];
+            //fileLoaded = true;
+            rasterImageItem.loadImageFromDisk();
         }
 
         protected function updateContrast():void
@@ -74,8 +80,12 @@
             }
 
             ba.position = 0;
-            encoder.encodeBytes(ba,0,displayImage.bitmapData.width);
-            gcode = gcode + "G7 N0 L"+ displayImage.bitmapData.width.toString() + " D" + encoder.toString();
+
+            for(var y:int = 0; y < displayImage.bitmapData.height; y++)
+            {
+                encoder.encodeBytes(ba,displayImage.bitmapData.width *y,displayImage.bitmapData.width);
+                gcode = gcode + "G7 N" + (y % 2).toString() + " L"+ displayImage.bitmapData.width.toString() + " D" + encoder.toString() + "\n";
+            }
 
             gcodeOutput.text = gcode;
             gcodePanel.visible = true;
@@ -100,7 +110,7 @@
 
     <s:Panel right="10" top="10" width="{width-300}" title="Image" visible="{fileLoaded}" id="imagePanel">
 
-        <s:BitmapImage width="100%" height="100%" id="displayImage" fillMode="clip"/>
+        <s:BitmapImage width="100%" height="100%" id="displayImage" fillMode="clip" source="{rasterImageItem.source}"/>
 
         <s:controlBarContent>
             <s:VGroup>
