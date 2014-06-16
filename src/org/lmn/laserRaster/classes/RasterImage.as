@@ -11,16 +11,30 @@ package org.lmn.laserRaster.classes
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
+	import flash.filters.ColorMatrixFilter;
 	import flash.net.FileFilter;
 	import flash.net.FileReference;
 
+	import org.lmn.laserRaster.LaserConfiguration;
+
 	import spark.primitives.BitmapImage;
+
+	//bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+	//    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+	//    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+	//    0, 0, 0, 1, 0];
+	//bwFilter = new ColorMatrixFilter(bwMatrix);
+
 
     [Event(name="RasterImageUpdate",type="flash.events.Event")]
 	public class RasterImage
 	{
-		[Bindable]
 		public var source:BitmapImage = new BitmapImage();
+		public var bwMatrix:Array;
+		public var bwFilter:ColorMatrixFilter;
+
+		[Bindable]
+		public var imageLoaded:Boolean = false;
 
 		private var fr:FileReference = new FileReference();
 
@@ -47,7 +61,6 @@ package org.lmn.laserRaster.classes
             var loader:Loader = new Loader();
             loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadBytesHandler);
             loader.loadBytes(fr.data);
-
 		}
 
         private function loadBytesHandler(event:Event):void
@@ -56,8 +69,29 @@ package org.lmn.laserRaster.classes
             loaderInfo.removeEventListener(Event.COMPLETE, loadBytesHandler);
             var incomingImage:DisplayObject = loaderInfo.content;
             source.source = incomingImage;
+			imageLoaded = true;
             var e:Event = new Event("RasterImageUpdate");
             dispatchEvent(e);
         }
+
+		public function get imageWidthInMM():Number
+		{
+			return source.width / LaserConfiguration.PPMM;
+		}
+
+		public function get imageHeightInMM():Number
+		{
+			return source.height / LaserConfiguration.PPMM;
+		}
+
+		public function get imageWidthInInch():Number
+		{
+			return source.width / LaserConfiguration.PPI;
+		}
+
+		public function get imageHeightInInch():Number
+		{
+			return source.height / LaserConfiguration.PPI;
+		}
     }
 }

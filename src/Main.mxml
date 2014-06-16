@@ -1,61 +1,44 @@
 <?xml version="1.0"?>
-<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" creationComplete="initApp(event)">
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+               creationComplete="initApp(event)" backgroundColor="#b4b4b4">
 
     <fx:Script>
         <![CDATA[
-        import flash.filters.ColorMatrixFilter;
-
         import mx.events.FlexEvent;
-        import mx.utils.Base64Encoder;
 
-        import org.lmn.laserRaster.classes.GCodeEncoder;
-
+        import org.lmn.laserRaster.assets.SpriteSheet;
         import org.lmn.laserRaster.classes.RasterImage;
 
-        private var bwMatrix:Array;
-        private var bwFilter:ColorMatrixFilter;
+        [Embed(source='org/lmn/laserRaster/assets/glyphicons-halflings.png')]
+        protected var glyphBitmap:Class;
 
         [Bindable]
-        private var fileLoaded:Boolean = false;
+        protected var myImage:RasterImage = new RasterImage();
 
-        protected var rasterImageItem:RasterImage = new RasterImage();
+        protected var glyphIcons:SpriteSheet = new SpriteSheet(new glyphBitmap(), 24, 24);
 
-        protected function initApp(event:FlexEvent):void {
-            rasterImageItem.addEventListener("RasterImageUpdate", imageUpdated);
-        }
-
-        protected function loadNewImage(e:MouseEvent):void
+        protected function initApp(event:FlexEvent):void
         {
-            rasterImageItem.loadImageFromDisk();
-            bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                0, 0, 0, 1, 0];
-            bwFilter = new ColorMatrixFilter(bwMatrix);
-            displayImage.filters = [bwFilter];
+            btnOpen.setStyle("icon", glyphIcons.drawTile(111));
+            btnSave.setStyle("icon", glyphIcons.drawTile(42));
+            btnCrop.setStyle("icon", glyphIcons.drawTile(92));
+            btnColorCorrection.setStyle("icon", glyphIcons.drawTile(59));
+            btnColorBW.setStyle("icon", glyphIcons.drawTile(60));
+            statusLabel.text = "Ready to load image.";
         }
 
-        protected function updateContrast():void {
-            bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-                0, 0, 0, 1, 0];
-            bwFilter = new ColorMatrixFilter(bwMatrix);
-            displayImage.filters = [bwFilter];
-        }
-
-        private function imageUpdated(event:Event):void
+        protected function btnOpen_clickHandler(event:MouseEvent):void
         {
-            //displayImage.source = rasterImageItem.source;
-            fileLoaded = true;
+            statusLabel.text = "Waiting for image...";
+            myImage.addEventListener("RasterImageUpdate", imageLoaded);
+            myImage.loadImageFromDisk();
         }
 
-        public function generateGCode(e:MouseEvent):void
+        private function imageLoaded(event:Event):void
         {
-            gcodeOutput.text = GCodeEncoder.generateGCode(displayImage.bitmapData, bwFilter);
-            gcodePanel.visible = true;
+            statusLabel.text = "Image Loaded."
+            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm";
         }
-
         ]]>
     </fx:Script>
 
@@ -63,35 +46,26 @@
         <s:ConstraintLayout />
     </s:layout>
 
-    <s:Panel left="10" top="10" width="250" title="Laser Raster Generator">
+    <s:SkinnableContainer id="menuBarGroup" top="0" left="0" right="0" height="48" backgroundColor="#575757">
         <s:layout>
-            <s:VerticalLayout horizontalAlign="center" gap="10" paddingTop="10" />
+            <s:HorizontalLayout paddingLeft="10" paddingRight="10" horizontalAlign="left" verticalAlign="middle" />
         </s:layout>
+        <s:Button id="btnOpen" label="Open" iconPlacement="top" click="btnOpen_clickHandler(event)" />
+        <s:Button id="btnSave" label="Export GCode" iconPlacement="top" enabled="{myImage.imageLoaded}"/>
+        <s:Spacer width="48" />
+        <s:Button id="btnCrop" label="Crop" iconPlacement="top" enabled="{myImage.imageLoaded}" />
+        <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" />
+        <s:Spacer width="100%" />
+        <s:Button id="btnColorBW" label="Color/BW" iconPlacement="top" enabled="{myImage.imageLoaded}" />
+    </s:SkinnableContainer>
 
-        <s:Button label="Load Image..." click="loadNewImage(event)" />
-        <s:Button label="Generate GCODE" enabled="{fileLoaded}" click="generateGCode(event)" />
+    <s:SkinnableContainer id="statusBarGroup" bottom="0" left="0" right="0" height="24" backgroundColor="#575757" color="#ffffff">
+        <s:layout>
+            <s:HorizontalLayout paddingLeft="10" paddingRight="10" horizontalAlign="left" verticalAlign="middle"/>
+        </s:layout>
+        <s:Label id="statusLabel" text="" width="100%"/>
+        <s:Label id="imageInfoLabel" text="" />
+    </s:SkinnableContainer>
 
-    </s:Panel>
-
-    <s:Panel right="10" top="10" width="{width-300}" title="Image" visible="{fileLoaded}" id="imagePanel">
-
-        <s:BitmapImage width="100%" height="100%" id="displayImage" fillMode="clip" source="@Embed('org/lmn/laserRaster/assets/lmn-logo-color-trans-large.png')" />
-
-        <s:controlBarContent>
-            <s:VGroup>
-                <s:HSlider width="250" minimum="0" maximum="1" height="5" id="rcontrastSlider" value="0.2225" toolTip="Red Contrast" stepSize="0.05" change="updateContrast()"/>
-                <s:HSlider width="250" minimum="0" maximum="1" height="5" id="gcontrastSlider" value="0.7169" toolTip="Green Contrast" stepSize="0.05" change="updateContrast()"/>
-                <s:HSlider width="250" minimum="0" maximum="1" height="5" id="bcontrastSlider" value="0.0606" toolTip="Blue Contrast" stepSize="0.05" change="updateContrast()"/>
-            </s:VGroup>
-        </s:controlBarContent>
-
-        <s:controlBarLayout>
-            <s:HorizontalLayout verticalAlign="middle" horizontalAlign="center" />
-        </s:controlBarLayout>
-    </s:Panel>
-
-    <s:Panel bottom="10" left="10" right="10" top="{imagePanel.height + 20}" title="GCode" visible="false" id="gcodePanel">
-        <s:TextArea width="100%" height="100%" id="gcodeOutput"/>
-    </s:Panel>
 
 </s:Application>

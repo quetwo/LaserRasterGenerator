@@ -15,20 +15,12 @@ package org.lmn.laserRaster.classes
 
 	import mx.utils.Base64Encoder;
 
+	import org.lmn.laserRaster.LaserConfiguration;
+
+	import org.lmn.laserRaster.LaserConfiguration;
+
 	public class GCodeEncoder
 	{
-		static const PREAMBLE:String = "M106 ;turn on stepper fan\n" +
-				"M80   ; enable accessories\n" +
-				"M84   ; disable steppers\n" +
-				"G21   ; set units to mm\n" +
-				"G90   ; set absolute positioning\n" +
-				"G92 X0 Y0 ; zero axis\n";
-
-		static const POSTAMBLE:String = "M5\n" +
-				"G0 X0 Y0 F4000	; End of path\n" +
-				"G90   ; set absolute positioning\n" +
-				"M107  ;turn off stepper fan\n" +
-				"M81   ; disable accessories";
 
 		public function GCodeEncoder()
 		{
@@ -37,7 +29,7 @@ package org.lmn.laserRaster.classes
 
 		static public function generateGCode(incomingBitmap:BitmapData, appliedFilter:ColorMatrixFilter):String
 		{
-			var gcode:String = PREAMBLE;
+			var gcode:String = LaserConfiguration.PREAMBLE;
 			var encoder:Base64Encoder = new Base64Encoder();
 
 			var color:uint;
@@ -71,7 +63,7 @@ package org.lmn.laserRaster.classes
 				gcode = gcode + "G7 N" + (y % 2).toString() + " L" + incomingBitmap.width.toString() + " D" + encoder.toString() + "\n";
 			}
 
-			gcode = gcode + "\n" + POSTAMBLE;
+			gcode = gcode + "\n" + LaserConfiguration.POSTAMBLE;
 
 			return gcode;
 		}
