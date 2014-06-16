@@ -7,10 +7,10 @@
  */
 package org.lmn.laserRaster.classes
 {
-import flash.display.DisplayObject;
-import flash.display.Loader;
-import flash.display.LoaderInfo;
-import flash.events.Event;
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
+	import flash.display.LoaderInfo;
+	import flash.events.Event;
 	import flash.net.FileFilter;
 	import flash.net.FileReference;
 
@@ -49,7 +49,6 @@ import flash.events.Event;
             loader.loadBytes(fr.data);
 
 		}
-
 
         private function loadBytesHandler(event:Event):void
         {

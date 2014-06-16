@@ -8,6 +8,8 @@
         import mx.events.FlexEvent;
         import mx.utils.Base64Encoder;
 
+        import org.lmn.laserRaster.classes.GCodeEncoder;
+
         import org.lmn.laserRaster.classes.RasterImage;
 
         private var bwMatrix:Array;
@@ -22,16 +24,15 @@
             rasterImageItem.addEventListener("RasterImageUpdate", imageUpdated);
         }
 
-        protected function loadNewImage(e:MouseEvent):void {
-            //displayImage.source = "org/lmn/laserRaster/assets/lmn-logo-color-trans-large.png";
-            //bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-            //    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-            //    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-            //    0, 0, 0, 1, 0];
-            //bwFilter = new ColorMatrixFilter(bwMatrix);
-            //displayImage.filters = [bwFilter];
-            //fileLoaded = true;
+        protected function loadNewImage(e:MouseEvent):void
+        {
             rasterImageItem.loadImageFromDisk();
+            bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
+                0, 0, 0, 1, 0];
+            bwFilter = new ColorMatrixFilter(bwMatrix);
+            displayImage.filters = [bwFilter];
         }
 
         protected function updateContrast():void {
@@ -43,52 +44,18 @@
             displayImage.filters = [bwFilter];
         }
 
-        protected function generateGCode(event:MouseEvent):void {
-            var gcode:String = "M106 ;turn on stepper fan\nM80   ; enable accessories\nM84   ; disable steppers\nG21   ; set units to mm\nG90   ; set absolute positioning\nG92 X0 Y0 ; zero axis\n";
-            var encoder:Base64Encoder = new Base64Encoder();
-
-            var color:uint;
-            var red:uint;
-            var green:uint;
-            var blue:uint;
-            var bwColor:uint;
-
-            var ba:ByteArray = new ByteArray();
-
-            encoder.insertNewLines = false;
-
-            var myBitmap:BitmapData = new BitmapData(displayImage.bitmapData.width, displayImage.bitmapData.height);
-            myBitmap.applyFilter(displayImage.bitmapData, new Rectangle(0, 0, displayImage.bitmapData.width, displayImage.bitmapData.height), new Point(), bwFilter);
-
-            for (var y:int = 0; y < displayImage.bitmapData.height; y++) {
-                for (var x:int = 0; x < displayImage.bitmapData.width; x++) {
-                    color = myBitmap.getPixel(x, y);
-                    red = color & 0xFF0000 >> 16;
-                    green = color & 0x00FF00 >> 8;
-                    blue = color & 0x0000FF >> 0;
-                    bwColor = (red + green + blue) / 3;
-
-                    ba.writeUnsignedInt(bwColor);
-                }
-            }
-
-            ba.position = 0;
-
-            for (var y:int = 0; y < displayImage.bitmapData.height; y++) {
-                encoder.encodeBytes(ba, displayImage.bitmapData.width * y, displayImage.bitmapData.width);
-                gcode = gcode + "G7 N" + (y % 2).toString() + " L" + displayImage.bitmapData.width.toString() + " D" + encoder.toString() + "\n";
-            }
-
-            gcodeOutput.text = gcode;
-            gcodePanel.visible = true;
-
-        }
-
         private function imageUpdated(event:Event):void
         {
             //displayImage.source = rasterImageItem.source;
             fileLoaded = true;
         }
+
+        public function generateGCode(e:MouseEvent):void
+        {
+            gcodeOutput.text = GCodeEncoder.generateGCode(displayImage.bitmapData, bwFilter);
+            gcodePanel.visible = true;
+        }
+
         ]]>
     </fx:Script>
 
@@ -108,7 +75,7 @@
 
     <s:Panel right="10" top="10" width="{width-300}" title="Image" visible="{fileLoaded}" id="imagePanel">
 
-        <s:BitmapImage width="100%" height="100%" id="displayImage" fillMode="clip" />
+        <s:BitmapImage width="100%" height="100%" id="displayImage" fillMode="clip" source="@Embed('org/lmn/laserRaster/assets/lmn-logo-color-trans-large.png')" />
 
         <s:controlBarContent>
             <s:VGroup>
