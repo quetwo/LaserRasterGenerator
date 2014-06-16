@@ -14,8 +14,9 @@
 
         [Bindable]
         protected var myImage:RasterImage = new RasterImage();
-
         protected var glyphIcons:SpriteSheet = new SpriteSheet(new glyphBitmap(), 24, 24);
+
+        private var _imageContainer:Sprite;
 
         protected function initApp(event:FlexEvent):void
         {
@@ -67,5 +68,6 @@
         <s:Label id="imageInfoLabel" text="" />
     </s:SkinnableContainer>
 
+    <s:SpriteVisualElement id="imageDisplay" left="0" right="0" top="48" bottom="24" />
 
 </s:Application>
