@@ -4,10 +4,13 @@
 
     <fx:Script>
         <![CDATA[
+        import mx.containers.TitleWindow;
         import mx.events.FlexEvent;
+        import mx.managers.PopUpManager;
 
         import org.lmn.laserRaster.assets.SpriteSheet;
         import org.lmn.laserRaster.classes.RasterImage;
+        import org.lmn.laserRaster.views.ResizePopup;
 
         [Embed(source='org/lmn/laserRaster/assets/glyphicons-halflings.png')]
         protected var glyphBitmap:Class;
@@ -30,6 +33,22 @@
 
         }
 
+        private function clearImageContainer():void
+        {
+            if (_imageContainer != null)
+            {
+                clearContainer(_imageContainer);
+            }
+        }
+
+        private function clearContainer(container:DisplayObjectContainer):void
+        {
+            while (container.numChildren > 0)
+            {
+                container.removeChildAt(0);
+            }
+        }
+
         protected function btnOpen_clickHandler(event:MouseEvent):void
         {
             clearImageContainer();
@@ -37,6 +56,7 @@
             myImage.addEventListener("RasterImageUpdate", imageLoaded);
             myImage.loadImageFromDisk();
         }
+
 
         private function imageLoaded(event:Event):void
         {
@@ -78,22 +98,12 @@
 
         }
 
-        private function clearImageContainer():void
+        protected function btnResize_clickHandler(event:MouseEvent):void
         {
-            if (_imageContainer != null)
-            {
-                clearContainer(_imageContainer);
-            }
+            var resizePopUpWindow:ResizePopup = PopUpManager.createPopUp(this,ResizePopup,true) as ResizePopup;
+            resizePopUpWindow.initWindow(myImage);
+            PopUpManager.centerPopUp(resizePopUpWindow);
         }
-
-        private function clearContainer(container:DisplayObjectContainer):void
-        {
-            while (container.numChildren > 0)
-            {
-                container.removeChildAt(0);
-            }
-        }
-
         ]]>
     </fx:Script>
 
@@ -108,7 +118,7 @@
         <s:Button id="btnOpen" label="Open" iconPlacement="top" click="btnOpen_clickHandler(event)" />
         <s:Button id="btnSave" label="Export GCode" iconPlacement="top" enabled="{myImage.imageLoaded}"/>
         <s:Spacer width="48" />
-        <s:Button id="btnResize" label="Resize" iconPlacement="top" enabled="{myImage.imageLoaded}" />
+        <s:Button id="btnResize" label="Resize" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnResize_clickHandler(event)" />
         <s:Button id="btnCrop" label="Crop" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Spacer width="100%" />

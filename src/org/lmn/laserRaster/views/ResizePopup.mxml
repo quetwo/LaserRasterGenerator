@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" title="Resize Image"
+        close="closeWindow()">
+    <fx:Script>
+        <![CDATA[
+        import mx.managers.PopUpManager;
+
+        import org.lmn.laserRaster.classes.RasterImage;
+
+        private var myImage:RasterImage;
+
+        public function initWindow(incomingImage:RasterImage):void
+        {
+            myImage = incomingImage;
+            newHeight.text = myImage.imageHeightInMM.toString();
+            newWidth.text = myImage.imageWidthInMM.toString();
+        }
+
+        public function closeWindow():void
+        {
+            PopUpManager.removePopUp(this);
+        }
+
+        private function saveButton_clickHandler(event:MouseEvent):void
+        {
+            closeWindow();
+        }
+        ]]>
+    </fx:Script>
+
+    <s:layout>
+        <s:FormLayout gap="-12" />
+    </s:layout>
+
+    <s:FormItem label="Height">
+        <s:TextInput id="newHeight" />
+        <s:helpContent>
+            <s:Label text="mm"/>
+        </s:helpContent>
+    </s:FormItem>
+    <s:FormItem label="Width">
+        <s:TextInput id="newWidth" />
+        <s:helpContent>
+            <s:Label text="mm"/>
+        </s:helpContent>
+    </s:FormItem>
+
+    <s:controlBarLayout>
+        <s:ConstraintLayout />
+    </s:controlBarLayout>
+
+    <s:controlBarContent>
+        <s:Button label="Resize" right="10" top="5" bottom="5" click="saveButton_clickHandler(event)" />
+    </s:controlBarContent>
+
+</s:TitleWindow>
