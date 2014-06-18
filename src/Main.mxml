@@ -16,20 +16,23 @@
         protected var myImage:RasterImage = new RasterImage();
         protected var glyphIcons:SpriteSheet = new SpriteSheet(new glyphBitmap(), 24, 24);
 
-        private var _imageContainer:Sprite;
+        private var _imageContainer:SpriteVisualElement;
 
         protected function initApp(event:FlexEvent):void
         {
             btnOpen.setStyle("icon", glyphIcons.drawTile(111));
             btnSave.setStyle("icon", glyphIcons.drawTile(42));
-            btnCrop.setStyle("icon", glyphIcons.drawTile(92));
+            btnResize.setStyle("icon", glyphIcons.drawTile(92));
+            btnCrop.setStyle("icon", glyphIcons.drawTile(82));
             btnColorCorrection.setStyle("icon", glyphIcons.drawTile(59));
             btnColorBW.setStyle("icon", glyphIcons.drawTile(60));
             statusLabel.text = "Ready to load image.";
+
         }
 
         protected function btnOpen_clickHandler(event:MouseEvent):void
         {
+            clearImageContainer();
             statusLabel.text = "Waiting for image...";
             myImage.addEventListener("RasterImageUpdate", imageLoaded);
             myImage.loadImageFromDisk();
@@ -39,7 +42,58 @@
         {
             statusLabel.text = "Image Loaded."
             imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm";
+            showImageOnScreen(myImage.source);
         }
+
+        private function showImageOnScreen(bitmap:Bitmap):void
+        {
+            if (_imageContainer == null)
+            {
+                _imageContainer = new SpriteVisualElement();
+            }
+
+            addElementAt(_imageContainer, 0);
+            _imageContainer.addChild(bitmap);
+
+            if (bitmap.width > width || bitmap.height > height)
+            {
+                var hRatio:Number = bitmap.width / width;
+                var vRatio:Number = bitmap.height / (height - 72);
+
+                if (hRatio >= vRatio)
+                {
+                    bitmap.width = width;
+                    bitmap.scaleY = bitmap.scaleX;
+                }
+                else
+                {
+                    bitmap.height = (height - 72);
+                    bitmap.scaleX = bitmap.scaleY;
+                }
+            }
+
+            // Center the bitmap in the display area
+            bitmap.x = (width - bitmap.width) / 2;
+            bitmap.y = ((height - bitmap.height - 72) / 2) + 48;
+
+        }
+
+        private function clearImageContainer():void
+        {
+            if (_imageContainer != null)
+            {
+                clearContainer(_imageContainer);
+            }
+        }
+
+        private function clearContainer(container:DisplayObjectContainer):void
+        {
+            while (container.numChildren > 0)
+            {
+                container.removeChildAt(0);
+            }
+        }
+
         ]]>
     </fx:Script>
 
@@ -54,6 +108,7 @@
         <s:Button id="btnOpen" label="Open" iconPlacement="top" click="btnOpen_clickHandler(event)" />
         <s:Button id="btnSave" label="Export GCode" iconPlacement="top" enabled="{myImage.imageLoaded}"/>
         <s:Spacer width="48" />
+        <s:Button id="btnResize" label="Resize" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Button id="btnCrop" label="Crop" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Spacer width="100%" />

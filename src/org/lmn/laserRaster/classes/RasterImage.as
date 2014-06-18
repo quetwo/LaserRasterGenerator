@@ -7,6 +7,7 @@
  */
 package org.lmn.laserRaster.classes
 {
+	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
@@ -29,7 +30,7 @@ package org.lmn.laserRaster.classes
     [Event(name="RasterImageUpdate",type="flash.events.Event")]
 	public class RasterImage
 	{
-		public var source:BitmapImage = new BitmapImage();
+		public var source:Bitmap = new Bitmap();
 		public var bwMatrix:Array;
 		public var bwFilter:ColorMatrixFilter;
 
@@ -67,8 +68,7 @@ package org.lmn.laserRaster.classes
         {
             var loaderInfo:LoaderInfo = (event.target as LoaderInfo);
             loaderInfo.removeEventListener(Event.COMPLETE, loadBytesHandler);
-            var incomingImage:DisplayObject = loaderInfo.content;
-            source.source = incomingImage;
+			source = loaderInfo.content as Bitmap;
 			imageLoaded = true;
             var e:Event = new Event("RasterImageUpdate");
             dispatchEvent(e);
