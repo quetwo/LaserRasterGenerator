@@ -4,7 +4,6 @@
 
     <fx:Script>
         <![CDATA[
-        import mx.containers.TitleWindow;
         import mx.events.FlexEvent;
         import mx.managers.PopUpManager;
 
@@ -20,6 +19,7 @@
         protected var glyphIcons:SpriteSheet = new SpriteSheet(new glyphBitmap(), 24, 24);
 
         private var _imageContainer:SpriteVisualElement;
+        private var inColor:Boolean;
 
         protected function initApp(event:FlexEvent):void
         {
@@ -101,7 +101,9 @@
             // Center the bitmap in the display area
             bitmap.x = (width - bitmap.width) / 2;
             bitmap.y = ((height - bitmap.height - 72) / 2) + 48;
+            inColor = false;
 
+            _imageContainer.filters = [myImage.bwFilter];
         }
 
         protected function btnResize_clickHandler(event:MouseEvent):void
@@ -114,7 +116,16 @@
 
         private function btnColorBW_clickHandler(event:MouseEvent):void
         {
-
+            if(inColor)
+            {
+                _imageContainer.filters = [myImage.bwFilter];
+                inColor = false;
+            }
+            else
+            {
+                _imageContainer.filters = [];
+                inColor = true;
+            }
         }
         ]]>
     </fx:Script>

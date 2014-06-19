@@ -9,7 +9,6 @@ package org.lmn.laserRaster.classes
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
-	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
@@ -19,8 +18,6 @@ package org.lmn.laserRaster.classes
 	import flash.net.FileReference;
 
 	import org.lmn.laserRaster.LaserConfiguration;
-
-	import spark.primitives.BitmapImage;
 
 	//bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
 	//    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
@@ -33,7 +30,7 @@ package org.lmn.laserRaster.classes
 	public class RasterImage
 	{
 		public var source:Bitmap = new Bitmap();
-		public var bwMatrix:Array;
+		public var bwMatrix:Array = [0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0, 0, 0, 0, 0, 1, 0];
 		public var bwFilter:ColorMatrixFilter;
 
 		[Bindable] public var imageLoaded:Boolean = false;
@@ -44,6 +41,7 @@ package org.lmn.laserRaster.classes
 		{
 			fr.addEventListener(Event.SELECT, selectedFile);
 			fr.addEventListener(Event.COMPLETE, fileLoaded);
+			bwFilter = new ColorMatrixFilter(bwMatrix);
 		}
 
 		public function loadImageFromDisk():void
