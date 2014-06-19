@@ -12,6 +12,7 @@ package org.lmn.laserRaster.classes
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.filters.ColorMatrixFilter;
 	import flash.geom.Matrix;
 	import flash.net.FileFilter;
@@ -25,7 +26,8 @@ package org.lmn.laserRaster.classes
 	//    0, 0, 0, 1, 0];
 	//bwFilter = new ColorMatrixFilter(bwMatrix);
 
-
+	[Event(name="ExportFinished",type="flash.events.Event")]
+	[Event(name="ExportFailed",type="flash.events.Event")]
     [Event(name="RasterImageUpdate",type="flash.events.Event")]
 	public class RasterImage
 	{
@@ -36,11 +38,16 @@ package org.lmn.laserRaster.classes
 		[Bindable] public var imageLoaded:Boolean = false;
 
 		private var fr:FileReference = new FileReference();
+		private var frSave:FileReference = new FileReference();
 
 		public function RasterImage()
 		{
 			fr.addEventListener(Event.SELECT, selectedFile);
 			fr.addEventListener(Event.COMPLETE, fileLoaded);
+
+			frSave.addEventListener(Event.COMPLETE, exportFileComplete);
+			frSave.addEventListener(IOErrorEvent.IO_ERROR, errorSavingFile);
+
 			bwFilter = new ColorMatrixFilter(bwMatrix);
 		}
 
@@ -84,6 +91,27 @@ package org.lmn.laserRaster.classes
 			source = new Bitmap(newBitmap);
 		}
 
+		public function exportGCode():void
+		{
+			var outputFileName:String = fr.name + ".gcode";
+
+			frSave.save(GCodeEncoder.generateGCode(source.bitmapData, bwFilter), outputFileName);
+		}
+
+		private function exportFileComplete(event:Event):void
+		{
+			var e:Event = new Event("ExportFinished");
+			dispatchEvent(e);
+		}
+
+		private function errorSavingFile(event:IOErrorEvent):void
+		{
+			trace("[ERROR] ",event.text);
+			var e:Event = new Event("ExportFailed");
+			dispatchEvent(e);
+		}
+
+
 		public function get imageWidthInMM():Number
 		{
 			return source.width / LaserConfiguration.PPMM;
@@ -104,5 +132,5 @@ package org.lmn.laserRaster.classes
 			return source.height / LaserConfiguration.PPI;
 		}
 
-    }
+	}
 }

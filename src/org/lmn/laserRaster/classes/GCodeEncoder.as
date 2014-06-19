@@ -30,8 +30,6 @@ package org.lmn.laserRaster.classes
 		static public function generateGCode(incomingBitmap:BitmapData, appliedFilter:ColorMatrixFilter):String
 		{
 			var gcode:String = LaserConfiguration.PREAMBLE;
-			var encoder:Base64Encoder = new Base64Encoder();
-
 			var color:uint;
 			var red:uint;
 			var green:uint;
@@ -40,17 +38,20 @@ package org.lmn.laserRaster.classes
 
 			var ba:ByteArray = new ByteArray();
 
+			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.insertNewLines = false;
 
-			incomingBitmap.applyFilter(incomingBitmap, new Rectangle(0, 0, incomingBitmap.width, incomingBitmap.height),
+			var myImage:BitmapData = incomingBitmap.clone();
+
+			myImage.applyFilter(myImage, new Rectangle(0, 0, myImage.width, myImage.height),
 					new Point(), appliedFilter);
 
-			for (var y:int = 0; y < incomingBitmap.height; y++)
+			for (var y:int = 0; y < myImage.height; y++)
 			{
 				ba.clear();
-				for (var x:int = 0; x < incomingBitmap.width; x++)
+				for (var x:int = 0; x < myImage.width; x++)
 				{
-					color = incomingBitmap.getPixel(x, y);     //scan each pixel in the image
+					color = myImage.getPixel(x, y);     //scan each pixel in the image
 					red = color & 0xFF0000 >> 16;
 					green = color & 0x00FF00 >> 8;
 					blue = color & 0x0000FF >> 0;
@@ -59,8 +60,8 @@ package org.lmn.laserRaster.classes
 					ba.writeUnsignedInt(bwColor);
 				}
 				ba.position = 0;
-				encoder.encodeBytes(ba, 0, incomingBitmap.width);
-				gcode = gcode + "G7 N" + (y % 2).toString() + " L" + incomingBitmap.width.toString() + " D" + encoder.toString() + "\n";
+				encoder.encodeBytes(ba, 0, myImage.width);
+				gcode = gcode + "G7 N" + (y % 2).toString() + " L" + myImage.width.toString() + " D" + encoder.toString() + "\n";
 			}
 
 			gcode = gcode + "\n" + LaserConfiguration.POSTAMBLE;
