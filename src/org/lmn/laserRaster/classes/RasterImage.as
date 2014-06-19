@@ -8,11 +8,13 @@
 package org.lmn.laserRaster.classes
 {
 	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
 	import flash.filters.ColorMatrixFilter;
+	import flash.geom.Matrix;
 	import flash.net.FileFilter;
 	import flash.net.FileReference;
 
@@ -34,8 +36,7 @@ package org.lmn.laserRaster.classes
 		public var bwMatrix:Array;
 		public var bwFilter:ColorMatrixFilter;
 
-		[Bindable]
-		public var imageLoaded:Boolean = false;
+		[Bindable] public var imageLoaded:Boolean = false;
 
 		private var fr:FileReference = new FileReference();
 
@@ -74,6 +75,17 @@ package org.lmn.laserRaster.classes
             dispatchEvent(e);
         }
 
+		public function resizeImage(newHeight:Number, newWidth:Number):void
+		{
+			var scaleX:Number = newWidth / source.width;
+			var scaleY:Number = newHeight / source.height;
+
+			var newBitmap:BitmapData = new BitmapData(newWidth, newHeight);
+			newBitmap.draw(source.bitmapData, new Matrix(scaleX, 0, 0, scaleY));
+
+			source = new Bitmap(newBitmap);
+		}
+
 		public function get imageWidthInMM():Number
 		{
 			return source.width / LaserConfiguration.PPMM;
@@ -93,5 +105,6 @@ package org.lmn.laserRaster.classes
 		{
 			return source.height / LaserConfiguration.PPI;
 		}
+
     }
 }

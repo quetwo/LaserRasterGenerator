@@ -1,9 +1,16 @@
 <?xml version="1.0"?>
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" title="Resize Image"
         close="closeWindow()">
+
+    <fx:Metadata>
+        [Event(name="resizeComplete", type="flash.events.Event")]
+    </fx:Metadata>
+
     <fx:Script>
         <![CDATA[
         import mx.managers.PopUpManager;
+
+        import org.lmn.laserRaster.LaserConfiguration;
 
         import org.lmn.laserRaster.classes.RasterImage;
 
@@ -23,7 +30,16 @@
 
         private function saveButton_clickHandler(event:MouseEvent):void
         {
+            myImage.resizeImage(Number(newHeight.text) * LaserConfiguration.PPMM, Number(newWidth.text) * LaserConfiguration.PPMM);
+            var e:Event = new Event("resizeComplete");
+            dispatchEvent(e);
             closeWindow();
+        }
+
+        private function constrain_clickHandler(event:MouseEvent):void
+        {
+            var scaleX:Number = Number(newHeight.text) / myImage.imageHeightInMM;
+            newWidth.text = (myImage.imageWidthInMM * scaleX).toString();
         }
         ]]>
     </fx:Script>
@@ -50,6 +66,7 @@
     </s:controlBarLayout>
 
     <s:controlBarContent>
+        <s:Button label="Constrain Width" left="10" top="5" bottom="5" click="constrain_clickHandler(event)" />
         <s:Button label="Resize" right="10" top="5" bottom="5" click="saveButton_clickHandler(event)" />
     </s:controlBarContent>
 

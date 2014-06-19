@@ -65,6 +65,12 @@
             showImageOnScreen(myImage.source);
         }
 
+        private function resizedImage(event:Event):void
+        {
+            statusLabel.text = "Image Re-sized."
+            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm";
+        }
+
         private function showImageOnScreen(bitmap:Bitmap):void
         {
             if (_imageContainer == null)
@@ -100,9 +106,15 @@
 
         protected function btnResize_clickHandler(event:MouseEvent):void
         {
-            var resizePopUpWindow:ResizePopup = PopUpManager.createPopUp(this,ResizePopup,true) as ResizePopup;
+            var resizePopUpWindow:ResizePopup = PopUpManager.createPopUp(this, ResizePopup, true) as ResizePopup;
             resizePopUpWindow.initWindow(myImage);
+            resizePopUpWindow.addEventListener("resizeComplete", resizedImage);
             PopUpManager.centerPopUp(resizePopUpWindow);
+        }
+
+        private function btnColorBW_clickHandler(event:MouseEvent):void
+        {
+
         }
         ]]>
     </fx:Script>
@@ -122,7 +134,7 @@
         <s:Button id="btnCrop" label="Crop" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Spacer width="100%" />
-        <s:Button id="btnColorBW" label="Color/BW" iconPlacement="top" enabled="{myImage.imageLoaded}" />
+        <s:Button id="btnColorBW" label="Color/BW" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorBW_clickHandler(event)" />
     </s:SkinnableContainer>
 
     <s:SkinnableContainer id="statusBarGroup" bottom="0" left="0" right="0" height="24" backgroundColor="#575757" color="#ffffff">
