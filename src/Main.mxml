@@ -9,6 +9,7 @@
 
         import org.lmn.laserRaster.assets.SpriteSheet;
         import org.lmn.laserRaster.classes.RasterImage;
+        import org.lmn.laserRaster.views.ColorCorrectorPopup;
         import org.lmn.laserRaster.views.ResizePopup;
 
         [Embed(source='org/lmn/laserRaster/assets/glyphicons-halflings.png')]
@@ -41,7 +42,7 @@
             }
         }
 
-        private function clearContainer(container:DisplayObjectContainer):void
+        static private function clearContainer(container:DisplayObjectContainer):void
         {
             while (container.numChildren > 0)
             {
@@ -60,14 +61,14 @@
 
         private function imageLoaded(event:Event):void
         {
-            statusLabel.text = "Image Loaded."
+            statusLabel.text = "Image Loaded.";
             imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm";
             showImageOnScreen(myImage.source);
         }
 
         private function resizedImage(event:Event):void
         {
-            statusLabel.text = "Image Re-sized."
+            statusLabel.text = "Image Re-sized.";
             imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm";
         }
 
@@ -146,6 +147,12 @@
             statusLabel.text = "Export Completed.";
         }
 
+        private function btnColorCorrection_clickHandler(event:MouseEvent):void
+        {
+            var ColorCorrectorPopupWindow:ColorCorrectorPopup = PopUpManager.createPopUp(this, ColorCorrectorPopup, false) as ColorCorrectorPopup;
+            ColorCorrectorPopupWindow.initWindow(myImage.bwMatrix);
+            PopUpManager.centerPopUp(ColorCorrectorPopupWindow);
+        }
         ]]>
     </fx:Script>
 
@@ -162,7 +169,7 @@
         <s:Spacer width="48" />
         <s:Button id="btnResize" label="Resize" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnResize_clickHandler(event)" />
         <s:Button id="btnCrop" label="Crop" iconPlacement="top" enabled="{myImage.imageLoaded}" />
-        <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" />
+        <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorCorrection_clickHandler(event)" />
         <s:Spacer width="100%" />
         <s:Button id="btnColorBW" label="Color/BW" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorBW_clickHandler(event)" />
     </s:SkinnableContainer>

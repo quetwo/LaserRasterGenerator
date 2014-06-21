@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+  Created by Nicholas on 6/21/2014.
+-->
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+               title="Color Corrector" close="closeWindow()">
+
+    <fx:Metadata>
+        [Event(name="ColorMatrixChanged", type="org.lmn.laserRaster.classes.ColorChangeEvent")]
+    </fx:Metadata>
+
+    <fx:Script><![CDATA[
+        import mx.managers.PopUpManager;
+
+        public var colorMatrix:Array;
+
+        public function initWindow(incomingColorMatrix:Array):void
+        {
+            colorMatrix = incomingColorMatrix;
+            RSlider.value = colorMatrix[0];
+            GSlider.value = colorMatrix[1];
+            BSlider.value = colorMatrix[2];
+        }
+
+        public function closeWindow():void
+        {
+            PopUpManager.removePopUp(this);
+        }
+
+
+        ]]></fx:Script>
+
+    <s:layout>
+        <s:HorizontalLayout horizontalAlign="center" />
+    </s:layout>
+
+    <s:VSlider id="RSlider" height="150" minimum="0" maximum="1" stepSize="0.01"/>
+    <s:Spacer width="25" />
+    <s:VSlider id="GSlider" height="150" minimum="0" maximum="1" stepSize="0.01"/>
+    <s:Spacer width="25" />
+    <s:VSlider id="BSlider" height="150" minimum="0" maximum="1" stepSize="0.01"/>
+
+</s:TitleWindow>
