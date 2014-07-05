@@ -12,6 +12,8 @@
     <fx:Script><![CDATA[
         import mx.managers.PopUpManager;
 
+        import org.lmn.laserRaster.classes.ColorChangeEvent;
+
         public var colorMatrix:Array;
 
         public function initWindow(incomingColorMatrix:Array):void
@@ -27,17 +29,66 @@
             PopUpManager.removePopUp(this);
         }
 
+        public function updateColorCorrection():void
+        {
+            colorMatrix = [RSlider.value, GSlider.value, BSlider.value, 0, 0, RSlider.value, GSlider.value, BSlider.value,
+                0, 0, RSlider.value, GSlider.value, BSlider.value, 0, 0, 0, 0, 0, 1, 0];
+
+            var e:ColorChangeEvent = new ColorChangeEvent("ColorMatrixChanged");
+            dispatchEvent(e);
+        }
+
 
         ]]></fx:Script>
 
     <s:layout>
-        <s:HorizontalLayout horizontalAlign="center" />
+        <s:HorizontalLayout horizontalAlign="center" paddingTop="10" paddingBottom="10" />
     </s:layout>
 
-    <s:VSlider id="RSlider" height="150" minimum="0" maximum="1" stepSize="0.01"/>
+    <s:VGroup>
+        <s:VSlider id="RSlider" height="150" minimum="0" maximum="1" stepSize="0.01" change="updateColorCorrection()"/>
+        <s:Graphic>
+            <s:Ellipse height="10" width="10">
+                <s:stroke>
+                    <s:SolidColorStroke color="#000000" weight="1" />
+                </s:stroke>
+                <s:fill>
+                    <s:SolidColor color="#ff0000" />
+                </s:fill>
+            </s:Ellipse>
+        </s:Graphic>
+    </s:VGroup>
+
     <s:Spacer width="25" />
-    <s:VSlider id="GSlider" height="150" minimum="0" maximum="1" stepSize="0.01"/>
+
+    <s:VGroup>
+        <s:VSlider id="GSlider" height="150" minimum="0" maximum="1" stepSize="0.01" change="updateColorCorrection()"/>
+        <s:Graphic>
+            <s:Ellipse height="10" width="10">
+                <s:stroke>
+                    <s:SolidColorStroke color="#000000" weight="1" />
+                </s:stroke>
+                <s:fill>
+                    <s:SolidColor color="0x00ff00" />
+                </s:fill>
+            </s:Ellipse>
+        </s:Graphic>
+    </s:VGroup>
+
     <s:Spacer width="25" />
-    <s:VSlider id="BSlider" height="150" minimum="0" maximum="1" stepSize="0.01"/>
+
+    <s:VGroup>
+        <s:VSlider id="BSlider" height="150" minimum="0" maximum="1" stepSize="0.01" change="updateColorCorrection()"/>
+        <s:Graphic>
+            <s:Ellipse height="10" width="10">
+                <s:stroke>
+                    <s:SolidColorStroke color="#000000" weight="1" />
+                </s:stroke>
+                <s:fill>
+                    <s:SolidColor color="0x0000ff" />
+                </s:fill>
+            </s:Ellipse>
+        </s:Graphic>
+    </s:VGroup>
 
 </s:TitleWindow>

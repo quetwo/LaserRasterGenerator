@@ -6,7 +6,15 @@
         <dependencies target-player="13.0">
           <sdk name="4.12.1" />
         </dependencies>
-        <compiler-options />
+        <compiler-options>
+          <map>
+            <entry key="compiler.debug.swf" value="true" />
+            <entry key="metadata.creator" value="Nick Kwiatkowski" />
+            <entry key="metadata.date" value="2014-06" />
+            <entry key="metadata.publisher" value="Lansing Makers Network" />
+            <entry key="metadata.title" value="GCode Raster Generator" />
+          </map>
+        </compiler-options>
         <packaging-air-desktop />
         <packaging-android />
         <packaging-ios />

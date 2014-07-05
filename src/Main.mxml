@@ -115,7 +115,7 @@
             PopUpManager.centerPopUp(resizePopUpWindow);
         }
 
-        private function btnColorBW_clickHandler(event:MouseEvent):void
+        private function btnColorBW_clickHandler():void
         {
             if (inColor)
             {
@@ -152,6 +152,15 @@
             var ColorCorrectorPopupWindow:ColorCorrectorPopup = PopUpManager.createPopUp(this, ColorCorrectorPopup, false) as ColorCorrectorPopup;
             ColorCorrectorPopupWindow.initWindow(myImage.bwMatrix);
             PopUpManager.centerPopUp(ColorCorrectorPopupWindow);
+            ColorCorrectorPopupWindow.addEventListener("ColorMatrixChanged", updateImageColorFilter);
+        }
+
+        private function updateImageColorFilter(event:Event):void
+        {
+            myImage.bwMatrix = event.currentTarget.colorMatrix;
+            _imageContainer.filters = [];
+            myImage.reloadFilter();
+            if (!inColor) _imageContainer.filters = [myImage.bwFilter];
         }
         ]]>
     </fx:Script>
@@ -171,7 +180,7 @@
         <s:Button id="btnCrop" label="Crop" iconPlacement="top" enabled="{myImage.imageLoaded}" />
         <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorCorrection_clickHandler(event)" />
         <s:Spacer width="100%" />
-        <s:Button id="btnColorBW" label="Color/BW" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorBW_clickHandler(event)" />
+        <s:Button id="btnColorBW" label="Color/BW" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorBW_clickHandler()" />
     </s:SkinnableContainer>
 
     <s:SkinnableContainer id="statusBarGroup" bottom="0" left="0" right="0" height="24" backgroundColor="#575757" color="#ffffff">

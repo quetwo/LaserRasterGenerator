@@ -32,7 +32,7 @@ package org.lmn.laserRaster.classes
 	public class RasterImage
 	{
 		public var source:Bitmap = new Bitmap();
-		public var bwMatrix:Array = [0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0, 0, 0, 0, 0, 1, 0];
+		public var bwMatrix:Array = [0.22, 0.71, 0.06, 0, 0, 0.22, 0.71, 0.06, 0, 0, 0.22, 0.71, 0.06, 0, 0, 0, 0, 0, 1, 0];
 		public var bwFilter:ColorMatrixFilter;
 
 		[Bindable] public var imageLoaded:Boolean = false;
@@ -130,6 +130,11 @@ package org.lmn.laserRaster.classes
 		public function get imageHeightInInch():Number
 		{
 			return source.height / LaserConfiguration.PPI;
+		}
+
+		public function reloadFilter():void
+		{
+			bwFilter = new ColorMatrixFilter(bwMatrix);
 		}
 
 	}
