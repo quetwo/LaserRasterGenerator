@@ -30,6 +30,7 @@
             //btnCrop.setStyle("icon", glyphIcons.drawTile(82));
             btnColorCorrection.setStyle("icon", glyphIcons.drawTile(59));
             btnColorBW.setStyle("icon", glyphIcons.drawTile(60));
+            btnRotate.setStyle("icon",glyphIcons.drawTile(28));
             statusLabel.text = "Ready to load image.";
 
         }
@@ -62,14 +63,14 @@
         private function imageLoaded(event:Event):void
         {
             statusLabel.text = "Image Loaded.";
-            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(0) +  " Minutes";
+            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(0) + " Minutes";
             showImageOnScreen(myImage.source);
         }
 
         private function resizedImage(event:Event):void
         {
             statusLabel.text = "Image Re-sized.";
-            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(0) +  " Minutes";
+            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(0) + " Minutes";
         }
 
         private function showImageOnScreen(bitmap:Bitmap):void
@@ -162,6 +163,13 @@
             myImage.reloadFilter();
             if (!inColor) _imageContainer.filters = [myImage.bwFilter];
         }
+
+        private function btnRotate_clickHandler(event:MouseEvent):void
+        {
+            myImage.rotateImage();
+            clearImageContainer();
+            showImageOnScreen(myImage.source);
+        }
         ]]>
     </fx:Script>
 
@@ -178,6 +186,7 @@
         <s:Spacer width="48" />
         <s:Button id="btnResize" label="Resize" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnResize_clickHandler(event)" />
         <!--<s:Button id="btnCrop" label="Crop" iconPlacement="top" enabled="{myImage.imageLoaded}" /> -->
+        <s:Button id="btnRotate" label="Rotate" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnRotate_clickHandler(event)" />
         <s:Button id="btnColorCorrection" label="Color Correction" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorCorrection_clickHandler(event)" />
         <s:Spacer width="100%" />
         <s:Button id="btnColorBW" label="Color/BW" iconPlacement="top" enabled="{myImage.imageLoaded}" click="btnColorBW_clickHandler()" />

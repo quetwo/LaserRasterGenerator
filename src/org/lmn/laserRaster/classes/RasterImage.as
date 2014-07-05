@@ -91,6 +91,19 @@ package org.lmn.laserRaster.classes
 			source = new Bitmap(newBitmap);
 		}
 
+		public function rotateImage():void
+		{
+			var newBitmap:BitmapData = new BitmapData(source.height , source.width);
+			var rotationalMatrix:Matrix = new Matrix();
+
+			rotationalMatrix.rotate(Math.PI /2);
+			rotationalMatrix.tx = source.height;
+
+			newBitmap.draw(source.bitmapData, rotationalMatrix);
+
+			source = new Bitmap(newBitmap);
+		}
+
 		public function exportGCode():void
 		{
 			var outputFileName:String = fr.name + ".gcode";
