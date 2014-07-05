@@ -25,6 +25,8 @@ package org.lmn.laserRaster
 		public static const PPMM:Number = 10;  //Pixels per Millimeter
 		public static const PPI:Number = PPMM * 0.0393701;  //Pixels per Inch
 
+		public static const SPEED:Number = 3000; //Millimeters per Minute
+
 		public function LaserConfiguration()
 		{
 		}

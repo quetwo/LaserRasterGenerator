@@ -137,5 +137,10 @@ package org.lmn.laserRaster.classes
 			bwFilter = new ColorMatrixFilter(bwMatrix);
 		}
 
+		public function getPrintTime():Number
+		{
+			return (imageHeightInMM * imageWidthInMM) / LaserConfiguration.SPEED;
+		}
+
 	}
 }
