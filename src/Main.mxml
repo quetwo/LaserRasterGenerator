@@ -63,14 +63,14 @@
         private function imageLoaded(event:Event):void
         {
             statusLabel.text = "Image Loaded.";
-            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(0) + " Minutes";
+            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(1) + " Minutes";
             showImageOnScreen(myImage.source);
         }
 
         private function resizedImage(event:Event):void
         {
             statusLabel.text = "Image Re-sized.";
-            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(0) + " Minutes";
+            imageInfoLabel.text = "Image Size: " + myImage.imageWidthInMM + " x " + myImage.imageHeightInMM + " mm" + " | ~ " + (myImage.getPrintTime()).toFixed(1) + " Minutes";
         }
 
         private function showImageOnScreen(bitmap:Bitmap):void
