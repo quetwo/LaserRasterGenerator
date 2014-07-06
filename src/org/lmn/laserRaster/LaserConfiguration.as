@@ -22,7 +22,7 @@ package org.lmn.laserRaster
 				"M107  ;turn off stepper fan\n" +
 				"M81   ; disable accessories";
 
-		public static const PPMM:Number = 10;  //Pixels per Millimeter
+		public static const PPMM:Number = 5;  //Pixels per Millimeter
 		public static const PPI:Number = PPMM * 0.0393701;  //Pixels per Inch
 
 		public static const SPEED:Number = 200; //Millimeters per Minute
