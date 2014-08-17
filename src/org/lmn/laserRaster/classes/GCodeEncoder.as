@@ -64,21 +64,18 @@ package org.lmn.laserRaster.classes
                 buffer = "";
                 for(var bufferWidth:int = 0; bufferWidth < myImage.width; bufferWidth = bufferWidth + 50)
                 {
-                    buffer = "G7 ";
-                    if(bufferWidth == 0) buffer = buffer + "N" + (y % 2).toString() + " ";
+                    buffer = "G7 T" + (y % 2).toString() + " ";
                     if((bufferWidth + 50) < myImage.width)
                     {
-                        buffer = buffer + "L50 ";
+                        buffer = buffer + "P50 ";
                     }
                     else
                     {
-                        buffer = buffer + "L" + (myImage.width - bufferWidth).toString() + " ";
+                        buffer = buffer + "P" + (myImage.width - bufferWidth).toString() + " ";
                     }
                     encoder.encodeBytes(ba,bufferWidth,50);
                     gcode = gcode + buffer + "D" + encoder.toString() + " F" + LaserConfiguration.SPEED.toString() + "\n";
                 }
-				//encoder.encodeBytes(ba, 0, myImage.width);
-				//gcode = gcode + "G7 N" + (y % 2).toString() + " L" + myImage.width.toString() + " D" + encoder.toString() + "\n";
 			}
 
 			gcode = gcode + "\n" + LaserConfiguration.POSTAMBLE;

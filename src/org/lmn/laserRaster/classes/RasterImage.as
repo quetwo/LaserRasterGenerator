@@ -20,11 +20,6 @@ package org.lmn.laserRaster.classes
 
 	import org.lmn.laserRaster.LaserConfiguration;
 
-	//bwMatrix = [rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-	//    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-	//    rcontrastSlider.value, gcontrastSlider.value, bcontrastSlider.value, 0, 0,
-	//    0, 0, 0, 1, 0];
-	//bwFilter = new ColorMatrixFilter(bwMatrix);
 
 	[Event(name="ExportFinished",type="flash.events.Event")]
 	[Event(name="ExportFailed",type="flash.events.Event")]
